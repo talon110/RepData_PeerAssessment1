@@ -2,9 +2,8 @@
 
 ## Loading and preprocessing the data
 
-First, load the required libraries (dplyr & lubridate). Then, unzip the data set
-(activity.zip) if activity.csv doesn't already exist, and read that in to R as a 
-dataframe.
+First, load the required libraries. Then, unzip the data set(activity.zip) if 
+activity.csv doesn't already exist, and read that in to R as a dataframe.
 
 ```r
 library(plyr)
@@ -43,6 +42,8 @@ library(lubridate)
 ```
 
 ```r
+library(ggplot2)
+library(scales)
 if (!file.exists('activity.csv')) {
     unzip('activity.zip')
 }
@@ -175,4 +176,37 @@ median(by_date_corrected$total_steps, na.rm = TRUE)
 ```
 
 ## Are there differences in activity patterns between weekdays and weekends?
-data_corrected <- mutate(data_corrected, day_of_week = weekdays(data_corrected$date))
+
+Add a factor to the corrected dataframe which identifies weekdays vs. weekends.
+
+```r
+day_type <- data.frame("day_of_week" = c(1,2,3,4,5,6,7), 
+                       "type_day" = c("Weekend", "Weekday", "Weekday", "Weekday", 
+                                      "Weekday", "Weekday", "Weekend"))
+data_corrected <- mutate(data_corrected, day_of_week = wday(data_corrected$date)) %>%
+    left_join(day_type)
+```
+
+```
+## Joining by: "day_of_week"
+```
+
+Create a summary of the corrected interval dataframe, grouped by type of day and 
+interval. The results are then plotted to show how activity patterns change
+between weekdays and weekends.
+
+```r
+    by_interval_corrected <- summarize(group_by(data_corrected, type_day, interval), 
+                                       mean_steps = mean(steps))
+    g <- ggplot(by_interval_corrected, 
+                aes(x = parse_date_time(interval, "R*"), y = mean_steps),
+                facets = type_day)
+    g + geom_line() + facet_wrap( ~ type_day, nrow = 2, ncol = 1) + 
+        ggtitle("Mean steps taken per time interval on weekdays and weekends") +
+        xlab("Interval") + ylab("Mean across days of same type") + scale_x_datetime(labels = date_format("%R"))
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-14-1.png) 
+
+As is shown in the graphs, there are higher spikes in movement at certain times
+of the day on weekdays, whereas activity is lower and more spread out on weekends.
