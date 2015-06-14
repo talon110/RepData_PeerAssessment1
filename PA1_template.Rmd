@@ -14,7 +14,6 @@ library(plyr)
 library(dplyr)
 library(lubridate)
 library(ggplot2)
-library(scales)
 if (!file.exists('activity.csv')) {
     unzip('activity.zip')
 }
