@@ -1,3 +1,7 @@
+## Note to reviewers:
+
+Take a look at [http://talon110.github.io/RepData_PeerAssessment1/PA1_template.html](http://talon110.github.io/RepData_PeerAssessment1/PA1_template.html) if you wish to view this assignment as a webpage.
+
 ## Introduction
 
 It is now possible to collect a large amount of data about personal
